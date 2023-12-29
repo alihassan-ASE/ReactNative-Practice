@@ -9,9 +9,35 @@
     "test": "jest",
     "lint": "eslint ."
   },
+  "overrides": {
+    "react-native-reanimated": "^3.6.1"
+  },
   "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
+    "@react-native-async-storage/async-storage": "^1.21.0",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/drawer": "^6.6.6",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@react-navigation/stack": "^6.3.20",
+    "@reduxjs/toolkit": "^2.0.1",
+    "axios": "^1.6.3",
+    "expo-font": "^11.6.0",
+    "native-base": "^3.4.28",
     "react": "18.1.0",
-    "react-native": "0.70.0"
+    "react-native": "0.70.0",
+    "react-native-gesture-handler": "^2.14.0",
+    "react-native-reanimated": "^3.6.1",
+    "react-native-safe-area-context": "^4.8.1",
+    "react-native-screens": "^3.29.0",
+    "react-native-svg": "^14.1.0",
+    "react-native-swiper": "^1.6.0",
+    "react-native-vector-icons": "^10.0.3",
+    "react-navigation": "^5.0.0",
+    "react-redux": "^9.0.4",
+    "redux": "^5.0.0",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
