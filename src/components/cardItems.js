@@ -1,17 +1,15 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addToCart, removeFromCart } from '../redux/action';
-import { useDispatch } from 'react-redux';
+import { storeCartData } from '../services/storage';
 import Swiper from 'react-native-swiper';
 
 const CardItem = (props) => {
   const { title, images } = props;
-  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const handleAddToCart = () => {
-    dispatch(addToCart(props));
+    storeCartData(props);
   };
 
   return (

@@ -1,36 +1,50 @@
 import React, { useState } from 'react';
 import { TextInput, Text, Button, View, StyleSheet, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { userCredentials } from '../../redux/action';
+import { postData } from '../../services/apicalls';
+import { fetchUsersData } from '../../redux/action';
 
 const Categories = ({ navigation }) => {
-    const [information, setInformation] = useState({ name: '', email: '' });
-    const [errors, setErrors] = useState({ name: '', email: '' });
+    const [information, setInformation] = useState({ first_name: '', email: '', last_name: '', gender: '' });
+    const [errors, setErrors] = useState({ first_name: '', email: '', last_name: '', gender: '' });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const dispatch = useDispatch();
 
     const handleNext = () => {
-        const newErrors = { name: '', email: '' };
+        const newErrors = { first_name: '', email: '', last_name: '', gender: '' };
 
-        if (information.name === '') {
-            newErrors.name = 'Please enter your name';
+        if (information.first_name === '') {
+            newErrors.first_name = 'Please enter your First Name';
+        }
+
+        if (information.last_name === '') {
+            newErrors.last_name = 'Please enter your Last Name';
         }
 
         if (information.email === '') {
-            newErrors.email = 'Please enter your email';
+            newErrors.email = 'Please enter your Email';
         }
 
-        if (newErrors.name !== '' || newErrors.email !== '') {
+        if (information.gender === '') {
+            newErrors.gender = 'Please enter your Gender';
+        }
+
+        if (newErrors.first_name !== '' || newErrors.email !== '' || newErrors.last_name !== '' || newErrors.gender !== '') {
             setErrors(newErrors);
         } else {
-            setErrors({ name: '', email: '' });
+            setErrors({ first_name: '', email: '', gender: '', last_name: '' });
             setIsModalOpen(true);
         }
     };
 
-    const handleModalYes = () => {
+    const handleModalYes = async () => {
         setIsModalOpen(false);
-        navigation.navigate('Wishlist', { information });
+        await postData(information);
+        dispatch(fetchUsersData());
+        setInformation({
+            first_name: '', email: '', last_name: '', gender: '' 
+        })
+        // navigation.navigate('Wishlist');
     };
 
     const handleModalNo = () => {
@@ -46,15 +60,26 @@ const Categories = ({ navigation }) => {
             <View style={styles.container}>
                 <Text style={styles.title}>User Information</Text>
                 <TextInput
-                    value={information.name}
+                    value={information.first_name}
                     onChangeText={(text) => {
-                        setInformation({ ...information, name: text });
-                        setErrors({ ...errors, name: '' });
+                        setInformation({ ...information, first_name: text });
+                        setErrors({ ...errors, first_name: '' });
                     }}
-                    placeholder='Full Name'
+                    placeholder='First Name'
                     style={styles.textInput}
                 />
-                {errors.name !== '' && <Text style={styles.errorText}>{errors.name}</Text>}
+                {errors.first_name !== '' && <Text style={styles.errorText}>{errors.first_name}</Text>}
+
+                <TextInput
+                    value={information.last_name}
+                    onChangeText={(text) => {
+                        setInformation({ ...information, last_name: text });
+                        setErrors({ ...errors, last_name: '' });
+                    }}
+                    placeholder='Last Name'
+                    style={styles.textInput}
+                />
+                {errors.last_name !== '' && <Text style={styles.errorText}>{errors.last_name}</Text>}
 
                 <TextInput
                     value={information.email}
@@ -66,6 +91,17 @@ const Categories = ({ navigation }) => {
                     style={styles.textInput}
                 />
                 {errors.email !== '' && <Text style={styles.errorText}>{errors.email}</Text>}
+
+                <TextInput
+                    value={information.gender}
+                    onChangeText={(text) => {
+                        setInformation({ ...information, gender: text });
+                        setErrors({ ...errors, gender: '' });
+                    }}
+                    placeholder='Gender'
+                    style={styles.textInput}
+                />
+                {errors.gender !== '' && <Text style={styles.errorText}>{errors.gender}</Text>}
 
                 <View style={styles.buttonContainer}>
                     <Button title='Next' onPress={handleNext} />

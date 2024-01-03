@@ -1,44 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { View, Text, Image, StyleSheet, Button } from "react-native";
-import { addToCart } from '../../redux/action';
+import { storeCartData } from '../../services/storage';
 import { useDispatch } from "react-redux";
 import Swiper from 'react-native-swiper';
 
 const CardDetailScreen = ({ route }) => {
-  // const [exist, setExist] = useState(false);
-  // const [cartItems, setCartItems] = useState([]);
+
   const dispatch = useDispatch();
-
-
-  // async function getCartData() {
-  //   const data = await AsyncStorage.getItem('cart');
-  //   return JSON.parse(data || '[]');
-  // }
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const cartData = await getCartData();
-  //     setCartItems(cartData);
-  //     const result = cartItems?.filter((element) => {
-  //       return element.title === title
-  //     })
-  //     if (result && result.length > 0) {
-  //       setExist(true);
-  //     }
-  //     else {
-  //       setExist(false);
-  //     }
-  //   }
-  //   fetchData();
-  // }, [cartItems]);
-
 
   if (route.params) {
     const { title, images } = route.params;
     const handleAddToCart = () => {
-      dispatch(addToCart({ title, images }))
+      storeCartData({ title, images })
     }
-
 
     return (
       <View style={styles.container}>

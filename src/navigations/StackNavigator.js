@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/home/HomeScreen';
 import Notifications from '../screens/notification/Notification';
-import CartItemsScreen from '../screens/cart/cartItemsScreen';
+// import CartItemsScreen from '../screens/cart/cartItemsScreen';
 import CardDetailScreen from '../screens/cardDetails/CardDetailScreen';
 import { useNavigation } from '@react-navigation/native';
 import Cart from '../components/cart';

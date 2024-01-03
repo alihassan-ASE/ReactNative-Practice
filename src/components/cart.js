@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getCartData } from "../services/storage";
 
 export default Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
+  let [cartItems, setCartItems] = useState();
   const navigation = useNavigation();
-
-  async function getCartData() {
-    const data = await AsyncStorage.getItem('cart');
-    return JSON.parse(data || '[]');
-  }
 
   useEffect(() => {
     const fetchData = async () => {
-      const cartData = await getCartData();
+      const cartData = await getCartData('cart');
       setCartItems(cartData);
     }
+
     fetchData();
   }, [cartItems]);
 
@@ -32,7 +27,7 @@ export default Cart = () => {
           <Text
             style={styles.font}
           >
-            {cartItems.length}
+            {cartItems?.length}
           </Text>
         </View>
         <Icon

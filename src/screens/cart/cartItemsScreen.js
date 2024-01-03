@@ -1,42 +1,37 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { addToCart, removeFromCart } from '../../redux/action';
+import { storeCartData, removeCartData } from '../../services/storage';
 import Swiper from 'react-native-swiper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCartData } from '../../services/storage';
 
 const CartItemsScreen = () => {
   const [cartItems, setCartItems] = useState([]);
-  const dispatch = useDispatch();
 
   const handleAddToCart = (item) => {
-    dispatch(addToCart(item));
+    storeCartData(item);
   };
 
   const handleRemoveFromCart = (item) => {
-    dispatch(removeFromCart(item));
+    removeCartData(item.title);
   };
 
 
-  async function getCartData() {
-    const data = await AsyncStorage.getItem('cart');
-    return JSON.parse(data || '[]');
-  }
-
   useEffect(() => {
     const fetchData = async () => {
-      const cartData = await getCartData();
+      const cartData = await getCartData('cart');
       setCartItems(getUniqueItems(cartData));
     }
-    fetchData();
+      fetchData();
   }, [cartItems]);
 
   const renderCartItem = ({ item }) => {
+    const images = Array.isArray(item.images) ? item.images : [];
     return (
       <View style={styles.card}>
         <Swiper style={styles.swiperContainer} showsButtons={true} loop={true}>
-          {item.images.map((image, index) => (
+          {images?.map((image, index) => (
             <Image key={index} source={image} style={styles.cardImage} />
           ))}
         </Swiper>
@@ -54,7 +49,7 @@ const CartItemsScreen = () => {
     );
   };
 
-  if (cartItems.length > 0) {
+  if (cartItems?.length > 0) {
     return (
       <View style={styles.container}>
         <FlatList data={cartItems} renderItem={renderCartItem} keyExtractor={(item) => item.title} />
@@ -67,7 +62,7 @@ const CartItemsScreen = () => {
 
 const getUniqueItems = (cartItems) => {
   const uniqueItemsMap = new Map();
-  cartItems.forEach((item) => {
+  cartItems?.map((item) => {
     const count = uniqueItemsMap.get(item.title) ? uniqueItemsMap.get(item.title).count : 0;
     uniqueItemsMap.set(item.title, { ...item, count: count + 1 });
   });

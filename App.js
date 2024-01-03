@@ -1,9 +1,12 @@
 import React from 'react';
 import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import MainTabs from './navigations/bottomTabNavigator';
+import MainTabs from './src/navigations/bottomTabNavigator';
 import { useSelector } from 'react-redux';
-import LoginScreen from './screens/auth/loginScreen';
+import LoginScreen from './src/screens/auth/loginScreen';
+import { connectDb } from './utils/db';
+
+// connectDb();
 
 const Drawer = createDrawerNavigator();
 
