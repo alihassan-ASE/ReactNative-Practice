@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import MyButton from '../components/MyButton';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,27 +26,31 @@ const CartScreen = () => {
 
   // functions
   const handleCheckout = () => {
-    if (cartData.length > 0) {
-      Alert.alert('Order Success', 'Your order place successfully', [
+    Alert.alert(
+      'Order Success',
+      'Your order has been placed successfully',
+      [
         {
           text: 'OK',
           onPress: () => {
-            navigation.navigate('Home'),
-              dispatch(clearCart())
+            dispatch(clearCart());
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            });
           },
-        }
-      ]);
-    }
-    else {
-      Alert.alert('Order Fail', 'Your order not placed. First Add Item in Cart', [
-        { text: 'OK', onPress: () => navigation.navigate('HomeScreen') },
-      ]);
-    }
+        },
+        {
+          text: 'Cancel',
+          onPress: () => {
+          },
+        },
+      ]
+    );
   };
 
   return (
     <View style={styles.mainContainer}>
-      <SafeAreaView />
       <View style={styles.container}>
         <FlatList
           data={cartData}
@@ -63,7 +67,7 @@ const CartScreen = () => {
                   <Pressable
                     style={styles.btnBox}
                     onPress={() => dispatch(removeFromCart(item.id))}>
-                    <Text style={styles.btn}>-</Text>
+                    <Text style={styles.btnSize}>-</Text>
                   </Pressable>
                   <Pressable>
                     <Text style={styles.amount}>{item.quantity}</Text>
@@ -71,7 +75,7 @@ const CartScreen = () => {
                   <Pressable
                     style={styles.btnBox}
                     onPress={() => dispatch(addToCart(item))}>
-                    <Text style={styles.btn}>+</Text>
+                    <Text style={styles.btnSize}>+</Text>
                   </Pressable>
                 </View>
               </View>
@@ -85,7 +89,13 @@ const CartScreen = () => {
           Total Amount:{'  '}
           <Text style={styles.totalAmountPrice}>{totalAmount}$</Text>
         </Text>
-        <MyButton onPress={handleCheckout} title="Proceed to checkout" />
+        {
+          cartData.length > 0 ? (
+            <MyButton onPress={handleCheckout} title="Proceed to checkout" disabled={true} />
+          ) : (
+            <MyButton title="Proceed to checkout" disabled={false} />
+          )
+        }
       </View>
     </View>
   );
@@ -99,53 +109,54 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: '5%',
-    marginTop: 20
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   img: {
-    width: '100%',
     height: 200,
     resizeMode: 'cover',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    width: '100%',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 10,
+    color: 'black',
   },
   price: {
     fontSize: 18,
-    marginTop: 10,
   },
   cardBox: {
-    marginBottom: 30,
-    paddingBottom: 20,
+    alignSelf: 'center',
+    marginVertical: 15,
     borderRadius: 20,
     backgroundColor: 'white',
+    width: '95%',
     shadowColor: '#000',
+    shadowOpacity: 0.5,
     shadowOffset: {
       width: 0,
-      height: 5,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    elevation: 5,
+    elevation: 6,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
+    paddingVertical: 10,
+    justifyContent: 'space-between',
   },
   flatlistStyle: {
     flex: 1,
+    width: '95%',
   },
   twoBtn: {
     flexDirection: 'row',
-    marginVertical: 5,
     alignItems: 'center',
     alignSelf: 'center',
-    marginTop: 20,
+    marginBottom: 10,
   },
   btnBox: {
     width: 25,
@@ -156,36 +167,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 25,
   },
+  btnSize: {
+    fontSize: 20,
+    marginTop: -2,
+  },
   btn: {
-    fontSize: 25,
-    marginTop: -3,
+    fontSize: 16,
   },
   amount: {
     fontSize: 16,
   },
   bottom: {
     flex: 0.2,
-    gap: 10,
-    paddingHorizontal: '5%',
     backgroundColor: 'white',
     borderTopLeftRadius: 25,
-    borderTopRightRadius: 35,
+    borderTopRightRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
     shadowColor: '#000',
+    shadowOpacity: 0.5,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
+    elevation: 6,
   },
   totalAmount: {
     fontSize: 18,
     fontWeight: 'bold',
+    margin: 0,
+    padding: 0,
   },
   totalAmountPrice: {
     fontSize: 22,

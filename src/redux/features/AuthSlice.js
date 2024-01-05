@@ -1,5 +1,8 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {API} from '../../api';
+// AuthSlice.js
+
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { API } from '../../api';
+import { clearCart } from '../features/CartSlice';
 
 const initialState = {
   userData: null,
@@ -18,17 +21,23 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
   }
 });
 
-// signup
-
-// confirmSignup
+// logout
+export const logout = createAsyncThunk('logout', async (_, thunkApi) => {
+  try {
+    thunkApi.dispatch(clearCart());
+    return null;
+  } catch (error) {
+    return thunkApi.rejectWithValue(error);
+  }
+});
 
 const AuthSlice = createSlice({
   name: 'authSlice',
   initialState,
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     // login cases
-    builder.addCase(login.pending, state => {
+    builder.addCase(login.pending, (state) => {
       state.isLoading = true;
     });
     builder.addCase(login.fulfilled, (state, action) => {
@@ -36,7 +45,21 @@ const AuthSlice = createSlice({
       state.isSuccess = true;
       state.userData = action.payload;
     });
-    builder.addCase(login.rejected, (state, action) => {
+    builder.addCase(login.rejected, (state) => {
+      state.isLoading = false;
+      state.isError = true;
+    });
+
+    // logout cases
+    builder.addCase(logout.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(logout.fulfilled, (state) => {
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.userData = null;
+    });
+    builder.addCase(logout.rejected, (state) => {
       state.isLoading = false;
       state.isError = true;
     });

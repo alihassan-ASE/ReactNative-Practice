@@ -2,7 +2,6 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from '../screens/Login';
-import CounterScreen from '../screens/CounterScreen';
 import CartScreen from '../screens/CartScreen';
 import SingleProduct from '../screens/SingleProduct';
 import { useSelector } from 'react-redux';
@@ -23,65 +22,58 @@ const AppNavigation = () => {
   return (
     <Stack.Navigator
       screenOptions={({ route }) => ({
-        headerShown: route.name !== 'Cart' && route.name !== 'SingleProduct',
+        headerShown: route.name !== 'Cart' && route.name !== 'SingleProduct' && route.name !== 'Login',
       })}
     >
-      {userData ? (
-        <Stack.Group
-          screenOptions={({ route }) => ({
-            headerShown: route.name !== 'CardDetail' && route.name !== 'Notification',
-          })}
-        >
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{
-              title: 'Home',
-              headerLeft: () => (
-                <Icon name="menu" size={30} onPress={() => navigation.openDrawer()} />
-              ),
-              headerRight: () => (
-                <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
-                  <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
-                  {
-                    totalQuantity > 0 ?
-                      (
-                        <View style={styles.quantity}>
-                          <Text style={styles.text}>{totalQuantity}</Text>
-                          </View>
-                      ) : ''
-                  }
-                </Pressable>
-              )
-            }}
-          />
-          <Stack.Screen
-            name="SingleProduct"
-            component={SingleProduct}
-            options={{
-              headerRight: () => (
-                <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
-                  <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
-                  {
-                    totalQuantity > 0 &&
-                      (
-                        <View style={styles.quantity}>
-                          <Text style={styles.text}>{totalQuantity}</Text>
-                          </View>
-                      )
-                  }
-                </Pressable>
-              )
-            }}
-          />
-          <Stack.Screen name="Cart" component={CartScreen} />
-        </Stack.Group>
-      ) : (
-        <Stack.Group>
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="CounterScreen" component={CounterScreen} />
-        </Stack.Group>
-      )}
+      <Stack.Group
+        screenOptions={({ route }) => ({
+          headerShown: route.name !== 'CardDetail' && route.name !== 'Notification',
+        })}
+      >
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            title: 'Home',
+            headerLeft: () => (
+              <Icon style={{ marginRight: 30 }} name="menu" size={30} onPress={() => navigation.openDrawer()} />
+            ),
+            headerRight: () => (
+              <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
+                <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
+                {
+                  totalQuantity > 0 ?
+                    (
+                      <View style={styles.quantity}>
+                        <Text style={styles.text}>{totalQuantity}</Text>
+                      </View>
+                    ) : ''
+                }
+              </Pressable>
+            )
+          }}
+        />
+        <Stack.Screen
+          name="SingleProduct"
+          component={SingleProduct}
+          options={{
+            headerRight: () => (
+              <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
+                <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
+                {
+                  totalQuantity > 0 &&
+                  (
+                    <View style={styles.quantity}>
+                      <Text style={styles.text}>{totalQuantity}</Text>
+                    </View>
+                  )
+                }
+              </Pressable>
+            )
+          }}
+        />
+        <Stack.Screen name="Cart" component={CartScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 };
@@ -89,14 +81,15 @@ export default AppNavigation;
 
 const styles = StyleSheet.create({
   quantity: {
-    position: 'absolute', 
-    right: 0, 
+    position: 'absolute',
+    right: 0,
     top: -2,
-    backgroundColor: 'red', 
-    paddingHorizontal: 4, 
-    borderRadius: 25 
+    backgroundColor: 'red',
+    paddingHorizontal: 4,
+    borderRadius: 25
   },
   text: {
-    color:'white',
+    color: 'white',
+    fontSize: 12,
   }
 });

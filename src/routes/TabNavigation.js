@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
-import Home from '../screens/Home';
+import { View, Text, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 import CartScreen from '../screens/CartScreen';
@@ -36,7 +35,7 @@ const TabNavigation = ({ route, navigation }) => {
           }
 
           return (
-            <View style={{ position: 'relative' }}>
+            <View style={styles.icon}>
               <Icon name={iconName} size={25} color={color} />
               {route.name === 'Cart' && totalQuantity > 0 && (
                 <View style={styles.quantity}>
@@ -47,7 +46,9 @@ const TabNavigation = ({ route, navigation }) => {
           );
         },
         tabBarLabelStyle: styles.tabBarLabelStyle,
-        tabBarStyle: {height: 100}
+        tabBarStyle: {
+          height: Platform.OS ==='android'? 55: 75
+        }
       })}
 
     >
@@ -65,7 +66,7 @@ const TabNavigation = ({ route, navigation }) => {
             <Icon
               name="menu"
               size={30}
-              style={{ marginLeft: 15 }}
+              style={{ marginLeft: 15, marginRight: 15 }}
               onPress={() => navigation.openDrawer()}
             />
           ),
@@ -80,7 +81,8 @@ export default TabNavigation;
 const styles = StyleSheet.create({
   tabBarLabelStyle: {
     fontSize: 14,
-    paddingBottom: 10,
+    paddingBottom: Platform.OS === 'android'? 5 : 0,
+    marginBottom: Platform.OS === 'android'? 0 : -8
   },
   quantity: {
     position: 'absolute', 
@@ -93,5 +95,10 @@ const styles = StyleSheet.create({
   text: {
     color:'white',
     fontSize: 12,
+  },
+  icon: {
+    position: 'relative',
+    padding: 0,
+    marginBottom: -5,  
   }
 });

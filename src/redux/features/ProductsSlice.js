@@ -1,8 +1,8 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {API} from '../../api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { API } from '../../api';
 
 const initialState = {
-  products: null,
+  products: [],
   isLoading: false,
   isSuccess: false,
   isError: false,
@@ -21,10 +21,18 @@ export const getAllProducts = createAsyncThunk(
   },
 );
 
+
 const ProductsSlice = createSlice({
   name: 'ProductsSlice',
   initialState,
-  reducers: {},
+  reducers: {
+    addProduct: (state, action) => {
+      const { products, isSuccess } = state.products;
+      console.log('Products', products)
+      console.log("helllo", action.payload);
+      products.push(action.payload);
+    },
+  },
   extraReducers: builder => {
     // getAllProducts cases
     builder.addCase(getAllProducts.pending, state => {
@@ -41,5 +49,7 @@ const ProductsSlice = createSlice({
     });
   },
 });
+
+export const { addProduct } = ProductsSlice.actions;
 
 export default ProductsSlice.reducer;

@@ -73,6 +73,7 @@ const CartSlice = createSlice({
         };
       }
     },
+    
     clearCart: () => {
       return initialState;
     },

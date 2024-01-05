@@ -2,26 +2,27 @@ import {
   Image,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MyButton from '../components/MyButton';
-import {useDispatch, useSelector} from 'react-redux';
-import {addToCart, removeFromCart} from '../redux/features/CartSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, removeFromCart } from '../redux/features/CartSlice';
 
 const SingleProduct = () => {
   // states
   const [currentItem, setCurrentItem] = useState({});
   // hooks
   const {
-    params: {Product},
+    params: { Product },
   } = useRoute();
-  const {navigate} = useNavigation();
+  const { navigate } = useNavigation();
   const dispatch = useDispatch();
-  const {cartData, totalAmount} = useSelector(state => state.cartItems);
+  const { cartData, totalAmount } = useSelector(state => state.cartItems);
 
   // life cycle
   useEffect(() => {
@@ -37,11 +38,13 @@ const SingleProduct = () => {
   }, [cartData]);
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView />
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Card */}
       <View style={styles.cardBox}>
-        <Image source={{uri: Product.thumbnail}} style={styles.img} />
+        <Image source={{ uri: Product.thumbnail }} style={styles.img} />
         <View style={styles.textBox}>
           <Text style={styles.title}>{Product.title}</Text>
           <Text style={styles.price}>${Product.price}</Text>
@@ -70,7 +73,7 @@ const SingleProduct = () => {
               <Pressable
                 style={styles.btnBox}
                 onPress={() => dispatch(removeFromCart(Product.id))}>
-                <Text style={styles.btn}>-</Text>
+                <Text style={styles.btnSize}>-</Text>
               </Pressable>
               <Pressable>
                 <Text style={styles.btn}>{currentItem.quantity}</Text>
@@ -78,19 +81,20 @@ const SingleProduct = () => {
               <Pressable
                 style={styles.btnBox}
                 onPress={() => dispatch(addToCart(Product))}>
-                <Text style={styles.btn}>+</Text>
+                <Text style={styles.btnSize}>+</Text>
               </Pressable>
             </View>
           ) : (
             <MyButton
               onPress={() => dispatch(addToCart(Product))}
               title="Add to Cart"
+              disabled={true}
             />
           )}
-          <MyButton onPress={() => navigate('Cart')} title="View Cart" />
+          <MyButton onPress={() => navigate('Cart')} title="View Cart" disabled={true} />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -99,7 +103,8 @@ export default SingleProduct;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: '5%',
+    margin: 'auto',
+    paddingTop: 15,
   },
   img: {
     width: '100%',
@@ -108,41 +113,53 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: 'black',
   },
   price: {
     fontSize: 18,
   },
   cardBox: {
-    marginBottom: 30,
+    flex: 1,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: '90%'
   },
   textBox: {
     flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     justifyContent: 'space-between',
-    marginTop: 20,
   },
   body: {
     marginTop: 30,
     gap: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     textTransform: 'capitalize',
-    marginVertical: 5
+    marginVertical: 5,
+    color: 'black',
   },
   value: {
     fontSize: 16,
     fontWeight: '400',
+    color: 'grey',
   },
   footer: {
-    marginTop: 50,
-    gap: 10,
+    flex: 1,
+    marginTop: 30,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingBottom: 30,
   },
   twoBtn: {
     flexDirection: 'row',
-    marginVertical: 5,
     alignItems: 'center',
     alignSelf: 'center',
   },
@@ -155,7 +172,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 25,
   },
-  btn: {
+  btnSize: {
     fontSize: 20,
+    marginTop: -2,
+  },
+  btn: {
+    fontSize: 16,
   },
 });
