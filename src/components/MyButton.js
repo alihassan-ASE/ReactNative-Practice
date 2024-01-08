@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 18,
+    flex: 1,
+
   },
   disabledButton: {
     backgroundColor: 'gray',

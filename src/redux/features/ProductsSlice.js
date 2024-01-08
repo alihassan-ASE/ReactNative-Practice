@@ -28,8 +28,6 @@ const ProductsSlice = createSlice({
   reducers: {
     addProduct: (state, action) => {
       const { products, isSuccess } = state.products;
-      console.log('Products', products)
-      console.log("helllo", action.payload);
       products.push(action.payload);
     },
   },

@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllProducts, addProduct } from '../redux/features/ProductsSlice';
 import Icon from 'react-native-vector-icons/Ionicons'
 import MyButton from '../components/MyButton';
-import ImagePicker from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import Swiper from 'react-native-swiper';
+import { Formik } from 'formik';
+
 
 const Home = () => {
   // hooks
@@ -13,27 +16,39 @@ const Home = () => {
   const dispatch = useDispatch();
   const { products, isSuccess } = useSelector(state => state.products);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [productData, setProductData] = useState({
-    brand: '',
-    category: '',
-    description: '',
-    discountPercentage: 0,
-    id: 0,
-    images: [],
-    price: 0,
-    rating: 0,
-    stock: 0,
-    thumbnail: '',
-    title: '',
-  });
+  const [productData, setProductData] = useState({ images: [] });
+
+  const { userData } = useSelector(state => state.auth);
+  const [hasEffectRun, setHasEffectRun] = useState(false);
 
   useEffect(() => {
-    dispatch(getAllProducts());
+    if (userData && hasEffectRun === false) {
+      dispatch(getAllProducts());
+      setHasEffectRun(true);
+    }
   }, []);
+
+  const addProductData = (values, response) => {
+    setProductData({
+      title: values.title,
+      category: values.category,
+      brand: values.brand,
+      description: values.description,
+      discountPercentage: values.discountPercentage,
+      id: values.id,
+      price: values.price,
+      rating: values.rating,
+      stock: values.stock,
+      images: productData.images ? [...productData.images, response.assets[0].uri] : [response.assets[0].uri],
+      thumbnail: response.assets[0].uri,
+    });
+  };
 
   const handleAddProduct = () => {
     dispatch(addProduct(productData));
-  }
+    closeModal();
+    setProductData({ images: [] });
+  };
   const openModal = () => {
     setIsModalVisible(true);
   }
@@ -41,33 +56,49 @@ const Home = () => {
     setIsModalVisible(false);
   }
 
-  const handleImagePicker = () => {
+  const handleImagePicker = (values) => {
     const options = {
-      title: 'Select Image',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
     };
-  
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
+
+    launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
+        console.log('Image picker error: ', response.error);
       } else {
-        setProductData({ ...productData, thumbnail: response.uri });
+        addProductData(values, response)
       }
     });
   };
-  
-  
+
+  const handleImageFromCamera = (values) => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled camera');
+      } else if (response.error) {
+        console.log('Camera Error: ', response.error);
+      } else {
+        console.log(response);
+        addProductData(values, response)
+      }
+    });
+  }
 
   return (
     <View style={styles.container}>
 
-      <View>
+      <View style={{}}>
         <MyButton onPress={openModal} title='Add New Product' disabled={true} />
       </View>
 
@@ -77,92 +108,215 @@ const Home = () => {
         visible={isModalVisible}
         onRequestClose={closeModal}
       >
-        <ScrollView 
-        showsVerticalScrollIndicator={false}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.modalContainer}>
-            <TouchableOpacity onPress={closeModal}>
-              <Icon name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Add New Product</Text>
+          <Formik
+            initialValues={{
+              title: '',
+              category: '',
+              brand: '',
+              description: '',
+              discountPercentage: '',
+              id: '',
+              price: '',
+              rating: '',
+              stock: '',
+              thumbnail: '',
+              images: [],
+            }}
+            onSubmit={(values, { resetForm }) => {
+              handleAddProduct();
+              resetForm();
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.brand) {
+                errors.brand = 'Brand is Required';
+              }
+              if (!values.category) {
+                errors.category = 'Category is Required';
+              }
+              if (!values.description) {
+                errors.description = 'Description is Required';
+              }
+              if (!values.discountPercentage) {
+                errors.discountPercentage = 'Discounted Percentage is Required';
+              }
+              if (!values.price) {
+                errors.price = 'Price is Required';
+              }
+              if (!values.rating) {
+                errors.rating = 'Rating is Required';
+              }
+              if (!values.id) {
+                errors.rating = 'Id is Required';
+              }
+              if (!values.stock) {
+                errors.stock = 'Stock is Required';
+              }
+              if (!values.title) {
+                errors.title = 'Title is Required';
+              }
+              if (productData.images.length === 0) {
+                errors.images = 'Image is Required';
+              }
+              return errors;
+            }}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
 
-            <Text style={{ alignSelf: 'flex-start' }}>Title*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Title"
-              value={productData?.title}
-              onChangeText={(text) => setProductData({ ...productData, title: text })}
-            />
+              <View style={styles.modalContainer}>
+                <TouchableOpacity onPress={closeModal}>
+                  <Icon name="close" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.modalTitle}>Add New Product</Text>
 
-            <Text style={{ alignSelf: 'flex-start' }}>Category*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Category"
-              value={productData?.category}
-              onChangeText={(text) => setProductData({ ...productData, category: text })}
-            />
-        
-            <Text style={{ alignSelf: 'flex-start' }}>Brand*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Brand"
-              value={productData?.brand}
-              onChangeText={(text) => setProductData({ ...productData, brand: text })}
-            />
+                <Text style={{ alignSelf: 'flex-start' }}>Id*</Text>
+                <TextInput
+                  style={styles.input}
+                  onBlur={handleBlur('id')}
+                  placeholderTextColor="grey"
+                  placeholder="Id"
+                  value={values.id}
+                  autoCapitalize="none"
+                  onChangeText={handleChange('id')}
 
-            <Text style={{ alignSelf: 'flex-start' }}>Desciprtion*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Description"
-              value={productData?.description}
-              onChangeText={(text) => setProductData({ ...productData, description: text })}
-            />
+                />
+                <Text style={{ alignSelf: 'flex-start' }}>Title*</Text>
+                <TextInput
+                  style={styles.input}
+                  onBlur={handleBlur('title')}
+                  placeholderTextColor="grey"
+                  placeholder="Title"
+                  value={values.title}
+                  autoCapitalize="none"
+                  onChangeText={handleChange('title')}
 
-            <Text style={{ alignSelf: 'flex-start' }}>Discount Percentage*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Discount Percentage"
-              value={productData?.discountPercentage}
-              onChangeText={(text) => setProductData({ ...productData, discountPercentage: text })}
-            />
+                />
+                {errors.title && <Text style={styles.error}>{errors.title}</Text>}
+                <Text style={{ alignSelf: 'flex-start' }}>Category*</Text>
+                <TextInput
+                  style={styles.input}
+                  onBlur={handleBlur('category')}
+                  placeholderTextColor="grey"
+                  placeholder="Category"
+                  value={values.category}
+                  autoCapitalize='none'
+                  onChangeText={handleChange('category')}
 
-            <Text style={{ alignSelf: 'flex-start' }}>Price*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Price"
-              value={productData?.price}
-              onChangeText={(text) => setProductData({ ...productData, price: text })}
-            />
+                />
+                {errors.category && <Text style={styles.error}>{errors.category}</Text>}
 
-            <Text style={{ alignSelf: 'flex-start' }}>Rating*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Rating"
-              value={productData?.rating}
-              onChangeText={(text) => setProductData({ ...productData, rating: text })}
-            />
+                <Text style={{ alignSelf: 'flex-start' }}>Brand*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('brand')}
+                  onBlur={handleBlur('brand')}
+                  placeholderTextColor="grey"
+                  placeholder="Brand"
+                  value={values.brand}
+                  autoCapitalize="none"
 
-            <Text style={{ alignSelf: 'flex-start' }}>Stock*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Stock"
-              value={productData?.stock}
-              onChangeText={(text) => setProductData({ ...productData, stock: text })}
-            />
+                />
+                {errors.brand && <Text style={styles.error}>{errors.brand}</Text>}
 
-            {/* <Text style={{ alignSelf: 'flex-start' }}>Thumbnail*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Thumbnail"
-              value={productData?.thumbnail}
-              onChangeText={(text) => setProductData({ ...productData, thumbnail: text })}
-            /> */}
-            <MyButton title={'Pick Image'} onPress={handleImagePicker} disabled={true} />
-            {productData.images.map((image, index) => (
-              <Image key={index} source={{ uri: image }} style={styles.imagePreview} />
-            ))}
-            <MyButton title="Add Product" onPress={handleAddProduct} disabled={true} />
-          </View>
+                <Text style={{ alignSelf: 'flex-start' }}>Desciprtion*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('description')}
+                  onBlur={handleBlur('description')}
+                  placeholderTextColor="grey"
+                  placeholder="Description"
+                  value={values.description}
+                  autoCapitalize="none"
+
+                />
+                {errors.description && <Text style={styles.error}>{errors.description}</Text>}
+
+                <Text style={{ alignSelf: 'flex-start' }}>Discount Percentage*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('discountPercentage')}
+                  onBlur={handleBlur('discountPercentage')}
+                  placeholder="Discount Percentage"
+                  placeholderTextColor="grey"
+                  value={values.discountPercentage}
+                  autoCapitalize="none"
+
+                />
+                {errors.discountPercentage && <Text style={styles.error}>{errors.discountPercentage}</Text>}
+
+                <Text style={{ alignSelf: 'flex-start' }}>Price*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('price')}
+                  onBlur={handleBlur('price')}
+                  placeholderTextColor="grey"
+                  placeholder="Price"
+                  value={values.price}
+                  autoCapitalize="none"
+
+                />
+                {errors.price && <Text style={styles.error}>{errors.price}</Text>}
+
+                <Text style={{ alignSelf: 'flex-start' }}>Rating*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('rating')}
+                  onBlur={handleBlur('rating')}
+                  placeholderTextColor="grey"
+                  placeholder="Rating"
+                  value={values.rating}
+                  autoCapitalize="none"
+
+                />
+                {errors.rating && <Text style={styles.error}>{errors.rating}</Text>}
+
+                <Text style={{ alignSelf: 'flex-start' }}>Stock*</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('stock')}
+                  onBlur={handleBlur('stock')}
+                  placeholderTextColor="grey"
+                  placeholder="Stock"
+                  value={values.stock}
+                  autoCapitalize="none"
+
+                />
+                {errors.stock && <Text style={styles.error}>{errors.stock}</Text>}
+
+                {productData.images?.length > 0 && (
+                  <View>
+                    <Text style={{ alignSelf: 'flex-start' }}>Thumbnail*</Text>
+
+                    <View style={{ height: 200 }}>
+                      <Image source={{ uri: productData.images[0] }} style={{ width: '100%', height: '100%' }} />
+                    </View>
+
+                    <Text style={{ alignSelf: 'flex-start' }}>Images</Text>
+                    <Swiper style={{ height: 200 }} showsButtons={true} loop={false}>
+                      {productData.images.map((item, index) => (
+                        <View key={index}>
+                          <Image source={{ uri: item }} style={{ width: '100%', height: '100%' }} />
+                        </View>
+                      ))}
+                    </Swiper>
+
+                  </View>
+                )}
+                <View style={{ alignItems: 'center' }}>
+                  <MyButton title={'Pick Image'} onPress={() => handleImagePicker(values)} disabled={true} />
+                  <MyButton title={'Take Image'} onPress={() => handleImageFromCamera(values)} disabled={true} />
+
+                  {productData.images?.length === 0 && errors.images && (
+                    <Text style={styles.error}>{errors.images}</Text>
+                  )}
+                  <MyButton title="Add Product" onPress={handleSubmit} disabled={true} />
+                </View>
+              </View>
+            )}
+          </Formik>
         </ScrollView>
       </Modal>
 
@@ -237,8 +391,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 40,
   },
   modalTitle: {
@@ -255,8 +407,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   imagePreview: {
-    width: 50,
-    height: 50,
+    width: 100,
+    height: 80,
+    marginVertical: 10,
+  },
+  error: {
+    color: 'red',
     marginBottom: 10,
   },
 });
