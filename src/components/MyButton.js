@@ -1,12 +1,12 @@
-import {ActivityIndicator, Pressable, StyleSheet, Text} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 
 const MyButton = ({title, onPress, isLoading, disabled}) => {
   return (
-    <Pressable onPress={onPress} style={disabled ? styles.container : styles.disabledButton}>
+    <TouchableOpacity onPress={onPress} style={disabled ? styles.container : styles.disabledButton}>
       <Text style={styles.title}>{title}</Text>
       {isLoading && <ActivityIndicator size="small" color={'white'} />}
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 18,
+    flex: 1,
+
   },
   disabledButton: {
     backgroundColor: 'gray',

@@ -1,14 +1,18 @@
-import React from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Button } from 'react-native';
 import { Formik } from 'formik';
-import MyButton from '../components/MyButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/features/AuthSlice';
+import { ActivityIndicator } from 'react-native-paper';
 
 const Login = () => {
   // hooks
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.auth);
+  const { isLoading, isError } = useSelector((state) => state.auth);
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+  })
 
   // functions
   const handlingLogin = (values) => {
@@ -21,7 +25,7 @@ const Login = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}>
         <Text style={styles.title}>Login</Text>
         <Formik
           initialValues={{ email: '', password: '' }}
@@ -33,6 +37,18 @@ const Login = () => {
             }
             if (!values.password) {
               errors.password = 'Password is required';
+            }
+            if (values.email.trim() !== '') {
+              setCredentials({
+                ...credentials,
+                email: values.email,
+              })
+            }
+            if (values.password.trim() !== '') {
+              setCredentials({
+                ...credentials,
+                password: values.password,
+              })
             }
             return errors;
           }}
@@ -48,7 +64,7 @@ const Login = () => {
                 placeholderTextColor="grey"
                 autoCapitalize="none"
               />
-              {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+              {errors.email && touched.email && <Text style={styles.error}>{errors.email}</Text>}
               <TextInput
                 value={values.password}
                 secureTextEntry={true}
@@ -61,16 +77,22 @@ const Login = () => {
               {touched.password && errors.password && (
                 <Text style={styles.error}>{errors.password}</Text>
               )}
-              <MyButton
-                isLoading={isLoading}
-                title="Login"
-                onPress={handleSubmit}
-                disabled={Object.keys(errors).length > 0 ? false: true}
-              />
+              {isError && <Text style={{color: 'red'}}>Invalid Credentials</Text>}
+
+              <View style={styles.btn}>
+                <Button
+                  title='Login'
+                  isLoading={isLoading}
+                  onPress={handleSubmit}
+                  disabled={!(values.email && values.password)}
+                  color='white'
+                />
+                {isLoading && <ActivityIndicator size="small" color={'white'} />}
+              </View>
             </>
           )}
         </Formik>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
@@ -96,12 +118,22 @@ const styles = StyleSheet.create({
     width: '90%',
     marginVertical: 5,
     borderWidth: 1,
-    borderRadius: 25,
+    borderRadius: 15,
     borderColor: 'coral',
     paddingHorizontal: 20,
   },
   error: {
     color: 'red',
     marginBottom: 10,
+  },
+  btn: {
+    backgroundColor: 'coral',
+    width: '50%',
+    borderRadius: 15,
+    margin: 10,
+    paddingVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 });

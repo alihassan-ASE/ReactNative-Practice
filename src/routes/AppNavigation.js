@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Platform } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from '../screens/Login';
 import CartScreen from '../screens/CartScreen';
 import SingleProduct from '../screens/SingleProduct';
 import { useSelector } from 'react-redux';
@@ -16,7 +15,6 @@ const AppNavigation = () => {
   const totalQuantity = cartData.reduce((acc, item) => acc + item.quantity, 0);
   const { userData } = useSelector((state) => state.auth);
   const navigation = useNavigation();
-  const { navigate } = useNavigation();
 
 
   return (
@@ -36,11 +34,11 @@ const AppNavigation = () => {
           options={{
             title: 'Home',
             headerLeft: () => (
-              <Icon style={{ marginRight: 30 }} name="menu" size={30} onPress={() => navigation.openDrawer()} />
+              <Icon style={{ marginRight: 30, color: "black" }} name="menu" size={30} onPress={() => navigation.openDrawer()} />
             ),
             headerRight: () => (
               <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
-                <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
+                <Icon name="cart" size={30} style={{ marginLeft: 15, color: 'black' }} />
                 {
                   totalQuantity > 0 ?
                     (
@@ -59,7 +57,7 @@ const AppNavigation = () => {
           options={{
             headerRight: () => (
               <Pressable style={{ position: 'relative' }} onPress={() => navigation.navigate('Cart')} >
-                <Icon name="cart" size={30} style={{ marginLeft: 15 }} />
+                <Icon name="cart" size={30} style={{ marginLeft: 15, color: 'black'}} />
                 {
                   totalQuantity > 0 &&
                   (

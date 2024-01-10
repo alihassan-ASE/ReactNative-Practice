@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 18,
+    color: 'black',
   },
   cardBox: {
     alignSelf: 'center',
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 10,
     justifyContent: 'space-between',
   },
@@ -175,7 +176,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   amount: {
-    fontSize: 16,
+    fontSize: 18,
+    color: 'black',
+    fontWeight: '700'
   },
   bottom: {
     flex: 0.2,
@@ -184,7 +187,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
     shadowColor: '#000',
     shadowOpacity: 0.5,
     shadowOffset: {
@@ -198,8 +200,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 0,
     padding: 0,
+    color: 'black',
+
   },
   totalAmountPrice: {
     fontSize: 22,
+    color: 'black',
+
   },
 });

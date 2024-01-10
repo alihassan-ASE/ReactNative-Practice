@@ -2,7 +2,7 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API } from '../../api';
-import { clearCart } from '../features/CartSlice';
+import { clearCart } from './CartSlice';
 
 const initialState = {
   userData: null,
@@ -43,6 +43,7 @@ const AuthSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
+      state.isError = false;
       state.userData = action.payload;
     });
     builder.addCase(login.rejected, (state) => {

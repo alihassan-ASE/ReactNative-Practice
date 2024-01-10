@@ -66,7 +66,7 @@ const TabNavigation = ({ route, navigation }) => {
             <Icon
               name="menu"
               size={30}
-              style={{ marginLeft: 15, marginRight: 15 }}
+              style={{ marginLeft: 15, marginRight: 15, color: "black" }}
               onPress={() => navigation.openDrawer()}
             />
           ),

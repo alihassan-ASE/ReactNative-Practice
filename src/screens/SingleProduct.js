@@ -49,7 +49,9 @@ const SingleProduct = () => {
           <Text style={styles.title}>{Product.title}</Text>
           <Text style={styles.price}>${Product.price}</Text>
         </View>
+      </View>
         {/* body */}
+      <View style= {styles.container2}>
         <View style={styles.body}>
           <Text style={styles.label}>
             Category: <Text style={styles.value}>{Product.category}</Text>
@@ -106,11 +108,15 @@ const styles = StyleSheet.create({
     margin: 'auto',
     paddingTop: 15,
   },
+  container2: {
+    marginHorizontal: 20,
+  },
   img: {
     width: '100%',
     height: 200,
     resizeMode: 'cover',
-    borderRadius: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   title: {
     fontSize: 20,
@@ -119,17 +125,27 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 18,
+    color: 'black'
   },
   cardBox: {
-    flex: 1,
+    margin: 'auto',
     alignSelf: 'center',
-    justifyContent: 'center',
-    width: '90%'
+    marginVertical: 15,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    width: '90%',
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    elevation: 6,
   },
   textBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 10,
     justifyContent: 'space-between',
   },
@@ -147,7 +163,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     fontWeight: '400',
-    color: 'grey',
+    color: 'black',
   },
   footer: {
     flex: 1,
